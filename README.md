@@ -1,6 +1,6 @@
 # ticket-bisect
 
-This is a simple script that is an improvement over native git bisect for large-scale repositories with high commit to ticket density.
+A better git-bisect for repositories with high commit to ticket density.
 
 **Table of Contents**
 - [Background](#background)
@@ -12,17 +12,17 @@ This is a simple script that is an improvement over native git bisect for large-
 
 Bisecting is often the last resort for identifying offending code because it requires rebuilding, retesting, and is completely naive.
 
-git-bisect performs a bisect to identify changed code via commits; this is the lowest level of granularity for a repository.  The premise of this tool is that for most projects it is almost always sufficient to identify the ticket and then intiutition is sufficient to identify the commit (as opposed to repeatedly bisecting until the commit).  ticket-bisect groups and performs the bisect on a higher abstraction level -- tickets instead of commits -- to provide significant improvements.
+[git-bisect](https://git-scm.com/docs/git-bisect) performs a bisect to identify changed code via commits; this is the lowest level of granularity for a repository.  The premise of this tool is that for most projects it is almost always sufficient to identify the ticket and then intiutition is sufficient to identify the commit (as opposed to repeatedly bisecting until the commit).  
 
 (1) There are fewer bisect steps
 
-	This tool is intended for repositories with high commit to ticket density.  Binary search is logarithmic so step reduction is also logarithmic.
+* This tool is intended for repositories with high commit to ticket density.  Binary search is logarithmic so step reduction is also logarithmic.
 
 If there are 1000 commits over 10 tickets : git-bisect will take 10 steps while ticket-bisect will take 4.
 
 (2) Tickets are the proper level of abstraction
 
-	Pull requests are done at the ticket-level not at the commit-level.  Therefore unless you QA each commit, commits are not guaranteed to be stand-alone.  This means that commits often depend on other commits in the same tickets but sometimes these dependencies are not in commit order -- while the fix would be to properly order the commits, in reality bisect at this point leads to compilation failure and a failure to git-bisect.
+* Pull requests are done at the ticket-level not at the commit-level.  Therefore unless you QA each commit, commits are not guaranteed to be stand-alone.  This means that commits often depend on other commits in the same tickets but sometimes these dependencies are not in commit order -- while the fix would be to properly order the commits, in reality bisect at this point leads to compilation failure and a failure to git-bisect.
 
 Bisecting on tickets is more likely to be compile-valid than bisect on commits.
 
