@@ -2,6 +2,12 @@
 
 This is a simple script that is an improvement over native git bisect for large-scale repositories with high commit to ticket density.
 
+**Table of Contents**
+- [Background](#background)
+- [How To Use](#how-to-use)
+- [Bisect Tutorial](#bisect-tutorial)
+- [FAQ](#faq)
+
 # Background
 
 Bisecting is often the last resort for identifying offending code because it requires rebuilding, retesting, and is completely naive.
