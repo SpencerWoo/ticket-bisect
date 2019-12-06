@@ -14,8 +14,6 @@ dir_path = os.getcwd()
 TMP_FILENAME = "tmp_bisect.txt"
 LOG_FILENAME = "bisect_log.txt"
 
-LPS_DICT = {}
-
 def print_flush(*objects, sep='', end='\n', flush=False):
     return builtins.print(objects, sep, end, flush=True)
 
@@ -58,23 +56,25 @@ def file_write(filename, content, write=True):
 
 def list_generate():
     """ Transform TMP_FILENAME into LOG_FILENAME """
+    ticketMap = {}
+
     with open(TMP_FILENAME, encoding="UTF-8") as f:
         for line in f:
             split_line = line.split()
 
             commit_hash = split_line[0]
-            LPS = split_line[1]
+            ticket = split_line[1]
 
-            if LPS != LPS.upper():
+            if ticket != ticket.upper():
                 continue
-            elif LPS in LPS_DICT:
+            elif ticket in ticketMap:
                 continue
             else:
-                LPS_DICT[LPS] = commit_hash
+                ticketMap[ticket] = commit_hash
 
     output = "Most Recent\n\n"
-    for lp in LPS_DICT:
-        output += LPS_DICT[lp] + " : " + lp + "\n"
+    for ticket in ticketMap:
+        output += ticketMap[ticket] + " : " + ticket + "\n"
 
     output += "\nLeast Recent"
 
@@ -89,7 +89,7 @@ def list_log(commit_hash, cmd=""):
     file_write(LOG_FILENAME, content, False)
 
 def main():
-    # lb fix-pack-de-57-7010 fix-pack-de-58-7010
+    # tb fix-pack-de-57-7010 fix-pack-de-58-7010
     num_args = len(sys.argv)
 
     if "-help" in sys.argv or "-h" in sys.argv:

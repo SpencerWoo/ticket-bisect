@@ -28,6 +28,8 @@ Bisecting on tickets is more likely to be compile-valid than bisect on commits.
 
 # How To Use
 
+	TICKET-XXX - Fix IE 11 bug
+
 # Bisect Tutorial
 
 I'd suspect this section isn't necessary, however in the case one doesn't understand how a bisect works / bisect algorithm then this section should help.
