@@ -5,6 +5,9 @@ A better git-bisect for repositories with high commit to ticket density.
 **Table of Contents**
 - [Background](#background)
 - [How To Use](#how-to-use)
+	- [Setup](#setup)
+	- [Usage](#usage)
+	- [Additional Notes](#additional-notes)
 - [Bisect Tutorial](#bisect-tutorial)
 - [FAQ](#faq)
 
@@ -28,7 +31,53 @@ Bisecting on tickets is more likely to be compile-valid than bisect on commits.
 
 # How To Use
 
-	TICKET-XXX - Fix IE 11 bug
+### Setup
+
+1. Install Python 3.6+
+2. Download ticket-bisect.py
+3. Setup Alias to run from anywhere
+
+```
+tb(){
+	python3 path\ticket-bisect.py $@
+}
+```
+
+This runs python3 which runs ticket-bisect.py and passes in all additional arguments.
+
+4. Run ticket-bisect from any repository directory
+
+```
+tb fix-pack-de-57-7010 fix-pack-de-58-7010
+```
+
+### Usage
+
+TODO : explain how to use helper script generated output
+
+### Additional Notes
+
+	Commit Format
+
+We're matching the first commit text before the first space -- `^[\w\d]*`
+
+Expected formats:
+	TICKET-123 Description
+	123_ticket Description
+
+Unexpected format:
+	Description (TYPE-123)
+
+The last example won't work OOTB but should be usable after simple modifications
+
+
+	Liferay Bisect Wrapper
+
+Instead of working with a text file, the Liferay Bisect Wrapper script generates a self-contained HTML file called bisect_log.html, which is an interactive way to keep track of where you are in the bisect process. More information can be found here:
+
+https://github.com/holatuwol/liferay-faster-deploy/tree/master/notmine#liferay-bisect
+
+
 
 # Bisect Tutorial
 
