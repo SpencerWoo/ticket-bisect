@@ -37,8 +37,7 @@ def git_log_pretty(bad, good):
 
 def run_process(output, program, cmd, *params):
     if not quiet:
-        print("\t" + program + " " + cmd + " " +
-              ' '.join(str(p) for p in params[0]))
+        print(f"\t{program} {cmd} " + ' '.join(str(p) for p in params[0]))
 
     args = [program] + [cmd] + params[0]
     process = subprocess.Popen(args, stdout=subprocess.PIPE, cwd=dir_path)
@@ -49,17 +48,18 @@ def run_process(output, program, cmd, *params):
 # Write or Append
 def file_write(filename, content, write=True):
     if not quiet:
-        print("\t" + "Updating " + filename)
+        print(f"\tUpdating {filename}")
 
     with open(os.path.join(dir_path, filename),"w" if write else "a", encoding="UTF-8") as file:
         file.write(content)
 
-def list_generate():
+def list_generate(bad, good):
     """ Transform TMP_FILENAME into LOG_FILENAME """
-    ticketMap = {}
+    ticket_map = {}
 
     with open(TMP_FILENAME, encoding="UTF-8") as f:
         for line in f:
+            # Modify this logic to parse different TICKET_TYPES
             split_line = line.split()
 
             commit_hash = split_line[0]
@@ -67,14 +67,14 @@ def list_generate():
 
             if ticket != ticket.upper():
                 continue
-            elif ticket in ticketMap:
+            elif ticket in ticket_map:
                 continue
             else:
-                ticketMap[ticket] = commit_hash
+                ticket_map[ticket] = commit_hash
 
     output = "Most Recent\n\n"
-    for ticket in ticketMap:
-        output += ticketMap[ticket] + " : " + ticket + "\n"
+    for ticket in ticket_map:
+        output += f"{ticket_map[ticket]} : {ticket} \n"
 
     output += "\nLeast Recent"
 
@@ -85,7 +85,7 @@ def list_log(commit_hash, cmd=""):
     if cmd:
         cmd = " - " + cmd
 
-    content = cmd + "\n\n" + commit_hash
+    content = f"{cmd}\n\n{commit_hash}"
     file_write(LOG_FILENAME, content, False)
 
 def main():
@@ -104,15 +104,9 @@ def main():
 
         git_log_pretty(bad, good)
 
-        list_generate()
+        list_generate(bad, good)
 
         print("Generated " + LOG_FILENAME)
-
-        # commit_hash = bisect()
-        # git_checkout(commit_hash)
-
-        # list_log(commit_hash)
-
     else:
         sys.exit("Improper argument.  '-help' for guide.")
 
