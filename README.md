@@ -8,6 +8,8 @@ A better git-bisect for repositories with high commit to ticket density.
 	- [Setup](#setup)
 	- [Usage](#usage)
 	- [Additional Notes](#additional-notes)
+		- [Ticket Format](#ticket-format)
+		- [Bisect Wrapper](#bisect-wrapper)
 - [Bisect Tutorial](#bisect-tutorial)
 - [FAQ](#faq)
 
@@ -52,26 +54,33 @@ tb fix-pack-de-57-7010 fix-pack-de-58-7010
 ```
 
 ### Usage
+---
+
+If you're unfamiliar with bisecting in general feel free to read [Bisect Tutorial](#bisect-tutorial).
+
+Assuming you're familiar with bisecting this section will detail how to use this helper script.
+
+
 
 TODO : explain how to use helper script generated output
 
 ### Additional Notes
+---
 
-	Commit Format
+#### Commit Format
 
-We're matching the first commit text before the first space -- `^[\w\d]*`
+| Valid | Invalid |
+| --- | --- |
+| `TICKET-123 Description` | `Description TICKET-123` |
+| `TICKET123 Description` | `TICKET 123 Description` |
+| `123-ticket Description` | `Description 123-ticket` |
+| `tickethash Description` | `Description tickethash` |
 
-Expected formats:
-	TICKET-123 Description
-	123_ticket Description
+These are invalid because we're taking the first match when split on space -- `^[\w\d]*` -- and expecting it to be the unique idenitifer/ticket.
 
-Unexpected format:
-	Description (TYPE-123)
+While these invalid example won't work OOTB, it is quite simple to modify the script so it works with any ticket formatting.
 
-The last example won't work OOTB but should be usable after simple modifications
-
-
-	Liferay Bisect Wrapper
+#### Bisect Wrapper
 
 Instead of working with a text file, the Liferay Bisect Wrapper script generates a self-contained HTML file called bisect_log.html, which is an interactive way to keep track of where you are in the bisect process. More information can be found here:
 
@@ -81,15 +90,20 @@ https://github.com/holatuwol/liferay-faster-deploy/tree/master/notmine#liferay-b
 
 # Bisect Tutorial
 
-I'd suspect this section isn't necessary, however in the case one doesn't understand how a bisect works / bisect algorithm then this section should help.
+If you've never done a git-bisect, feel free to google or read my explanation of how to think about it below.
 
-The only manual action to perform a bisect is choosing the commit. The algorithm to choose the commit is a binary search, therefore it's simply choosing the proper start point and end point and the commit to test is in the middle (or the start if they're equivalent).
+Bisecting is when there's a change in behavior and you're interested in identifying that change.  Bisecting is a naive way to find the specific commit that changed the program's behavior.
 
-For example for 100 options we'd take #50.
+The only manual action to perform a bisect is choosing the commit. The algorithm to find the offending commit is a binary search.  So we're given the start and end points and we choose the middle commit to test.  Given the result of that test, we move the start to the middle or the end to the middle and then choose the middle commit again of our new range.
 
-If testing leads us to determine the options we're looking for is between 50 and 100 then next we would take 75.
-Otherwise the option is between 1 and 50 and we would take 25.
-We continue this binary search until it leads us to one option. For Git Bisect this would lead us to the commit, for Liferay Bisect this would lead us to the ticket.
+To visualize an example we might have 100 options.  The start would be 1, end would be 100, and our middle would be 50.  The start and end are given to us from the beginning (this is how we know we have 100 options) and our only decision is choosing the middle -- 50.
+
+We would test 50 and if that testing determined to be the same as #1 then we would know the option we're interested in is between 50 and 100.  Our next middle would be 75.
+Otherwise if testing determined 50 to exhibit the same behavior as #100 then we would know the option we're interested in is between 1 and 50.  Our next middle would be 25.
+
+We repeatedly perform this binary search until it leads us to one option.  For Git Bisect this would lead us to the commit, for Ticket Bisect this would lead us to the ticket.
+
+---
 
 An example path to identify #37 in 100 options would be 50, 25, 37, 31, 34, 36 and after 36 fails we would identify 37 as the target.
 
